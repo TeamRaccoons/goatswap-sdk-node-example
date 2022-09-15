@@ -12,6 +12,7 @@
     "@raccoonsdev/goatswap-sdk": "0.0.1-c9ef431.1",
     "@raccoonsdev/solana-contrib": "0.0.1-c9ef431.1",
     "@solana/web3.js": "^1.59.1",
+    "commander": "^9.4.0",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
