@@ -11,10 +11,11 @@ import {
   loadCollectionToKeyedPairs,
   loadPairMetasForKeyedPairs,
   KeyedPair,
+  GoatswapProgram,
 } from "@raccoonsdev/goatswap-sdk";
 import { getMetadataForMints } from "@raccoonsdev/solana-contrib";
 import { lamportsToUiAmount } from "@raccoonsdev/solana-contrib";
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { Command } from "commander";
 import { loadKeypair } from "./utils";
 
@@ -38,6 +39,14 @@ async function showCollectionPairsAsOrderBooks(collectionArg: string) {
   bids.forEach(({ price }) => {
     console.log(lamportsToUiAmount(price));
   });
+}
+
+async function simulateAndDisplayTx(tx: Transaction, feePayer: PublicKey) {
+  tx.feePayer = feePayer;
+  tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+  const result = await connection.simulateTransaction(tx.compileMessage());
+  console.log(result.value.err);
+  console.log(result.value.logs);
 }
 
 const command = new Command();
@@ -89,9 +98,10 @@ command
       });
 
       if (dryRun) {
-        const result = await builder.simulate();
-        console.log(result);
-        console.log(result.raw);
+        await simulateAndDisplayTx(
+          await builder.transaction(),
+          program.provider.publicKey
+        );
       } else {
         const signature = await builder.rpc();
         console.log(`txId: ${signature}`);
@@ -157,12 +167,10 @@ command
     );
 
     if (dryRun) {
-      const tx = await builder.transaction();
-      tx.feePayer = program.provider.publicKey;
-      tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-      const result = await connection.simulateTransaction(tx.compileMessage());
-      console.log(result.value.err);
-      console.log(result.value.logs);
+      await simulateAndDisplayTx(
+        await builder.transaction(),
+        program.provider.publicKey
+      );
     } else {
       const signature = await builder.rpc();
       console.log(`txId: ${signature}`);

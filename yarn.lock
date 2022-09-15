@@ -136,20 +136,20 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@raccoonsdev/goatswap-sdk@0.0.1-c9ef431.1":
-  version "0.0.1-c9ef431.1"
-  resolved "https://registry.yarnpkg.com/@raccoonsdev/goatswap-sdk/-/goatswap-sdk-0.0.1-c9ef431.1.tgz#f3fc74f2821a7cb77e45f42bc6a947365fb0ebe8"
-  integrity sha512-RK5EOb49rfXAEEdQEo+Jq4VZNXZ3QX8FwOCI++sfi5+6yuhKBbcgtYLOdfWqbBelExYGe39i/FI7YLRt6hBz3A==
+"@raccoonsdev/goatswap-sdk@0.0.1-1f24ad.0":
+  version "0.0.1-1f24ad.0"
+  resolved "https://registry.yarnpkg.com/@raccoonsdev/goatswap-sdk/-/goatswap-sdk-0.0.1-1f24ad.0.tgz#6742767eda2cb5690472c700c58762e5adc595b7"
+  integrity sha512-Bd5rDs/6qh4NyrlU2/ujmPdw0Z3bRZ5JKB+q6AcWK66jYV1gKmEgitNPdrk1nOWRDPx4ZuWaLVhJPRkTvvhXmw==
   dependencies:
     "@metaplex-foundation/mpl-token-metadata" "^2.2.4"
     "@project-serum/anchor" "^0.25.0"
-    "@raccoonsdev/solana-contrib" "0.0.1-c9ef431.1"
+    "@raccoonsdev/solana-contrib" "0.0.1-1f24ad.0"
     "@solana/web3.js" "^1.56.2"
 
-"@raccoonsdev/solana-contrib@0.0.1-c9ef431.1":
-  version "0.0.1-c9ef431.1"
-  resolved "https://registry.yarnpkg.com/@raccoonsdev/solana-contrib/-/solana-contrib-0.0.1-c9ef431.1.tgz#bdebbbb96631460cf24177ce7a0f45725b442972"
-  integrity sha512-MAhG3uxVDvmAL9aRUrX4OqSU640lXS1kdN+Y2ILJvYvwhIJOfkJVgMhG43/Af6HNHyDFVHYrdxaKL2QD33Gq4g==
+"@raccoonsdev/solana-contrib@0.0.1-1f24ad.0", "@raccoonsdev/solana-contrib@v0.0.1-1f24ad.0":
+  version "0.0.1-1f24ad.0"
+  resolved "https://registry.yarnpkg.com/@raccoonsdev/solana-contrib/-/solana-contrib-0.0.1-1f24ad.0.tgz#0f343145e3977ec7b755b19377da5fdff4d2cc4d"
+  integrity sha512-3+e7MK6P0HyefT6bT0QpHBlthD3X0IqJ8srkzbthrGd46HMOTXRokjMy6b2y/AjkmX7DKuX+PTvI+iOoBOkucw==
   dependencies:
     "@solana/web3.js" "^1.56.2"
     mathjs "^11.1.0"
@@ -339,7 +339,7 @@ bluebird@3.7.2:
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
 
-bn.js@^5.0.0, bn.js@^5.1.2, bn.js@^5.2.0, bn.js@^5.2.1:
+bn.js@^5.0.0, bn.js@^5.1.2, bn.js@^5.2.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.1.tgz#0bc527a6a0d18d0aa8d5b0538ce4a77dccfa7b70"
   integrity sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==
