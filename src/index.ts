@@ -1,45 +1,31 @@
 import { AnchorProvider, Wallet, BN } from "@project-serum/anchor";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
 import {
-  createReadonlyProgram,
-  getPairMetasForCollection,
+  createReadonlyGoatswapProgram,
+  createGoatswapProgram,
   initializePairMethodsBuilder,
-  pairMetasIntoOrderBooks,
-  createProgram,
   Cluster,
   swapTokenForNftMethodsBuilder,
-  loadCollectionToKeyedPairs,
   loadPairMetasForKeyedPairs,
   KeyedPair,
-  GoatswapProgram,
+  Pair,
+  MintInfoGoatkeeper,
+  MintInfoIndexWithProof,
+  fetchAllAddressWithPairs,
+  collectionFromCollectionVerification,
+  fetchAllAddressWithGoatkeepers,
+  createGoatkeeperProgram,
 } from "@raccoonsdev/goatswap-sdk";
 import { getMetadataForMints } from "@raccoonsdev/solana-contrib";
-import { lamportsToUiAmount } from "@raccoonsdev/solana-contrib";
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { Command } from "commander";
+import { showCollectionPairsAsOrderBooks } from "./collection-tools";
 import { loadKeypair } from "./utils";
 
 const CLUSTER: Cluster = "mainnet";
 const connection = new Connection("https://ssc-dao.genesysgo.net"); // "https://api.mainnet-beta.solana.com");
 const provider = new AnchorProvider(connection, {} as unknown as Wallet, {});
-const program = createReadonlyProgram(provider, CLUSTER);
-
-async function showCollectionPairsAsOrderBooks(collectionArg: string) {
-  const collection = new PublicKey(collectionArg);
-  const pairMetas = await getPairMetasForCollection(program, collection);
-  console.log(`pairMetas.length:`, pairMetas.length);
-
-  // Each pool is unfolded into individual orders
-  const { asks, bids } = pairMetasIntoOrderBooks(pairMetas);
-  console.log("Asks:");
-  asks.forEach(({ price }) => {
-    console.log(lamportsToUiAmount(price));
-  });
-  console.log("Bids:");
-  bids.forEach(({ price }) => {
-    console.log(lamportsToUiAmount(price));
-  });
-}
+const program = createReadonlyGoatswapProgram(provider, CLUSTER);
 
 async function simulateAndDisplayTx(tx: Transaction, feePayer: PublicKey) {
   tx.feePayer = feePayer;
@@ -49,6 +35,20 @@ async function simulateAndDisplayTx(tx: Transaction, feePayer: PublicKey) {
   console.log(result.value.logs);
 }
 
+// fetchMintInfo(s) will be implemented later on, only required for goatkeeper collections
+
+async function stubFetchMintInfos(
+  mints: string[]
+): Promise<MintInfoGoatkeeper[]> {
+  throw new Error("fetch mint infos not implemented");
+}
+
+async function stubFetchMintInfo(
+  mint: string
+): Promise<MintInfoIndexWithProof> {
+  throw new Error("fetch mint infos not implemented");
+}
+
 const command = new Command();
 
 command
@@ -56,11 +56,11 @@ command
   .option(
     "-c, --collection",
     "Collection",
-    "GWkXNWEq3DkEK1x9dMDBUedyGzsDfYaM2c1YpRCyXfGh" // Bitmon creatures
+    "B3LDTPm6qoQmSEgar2FHUHLt6KEHEGu9eSGejoMMv5eb" // Sea Shanties
   )
   .addHelpText("beforeAll", "Show collection pairs as order books")
   .action(async ({ collection }) =>
-    showCollectionPairsAsOrderBooks(collection)
+    showCollectionPairsAsOrderBooks(program, collection)
   );
 
 command
@@ -85,12 +85,14 @@ command
     }) => {
       const kp = loadKeypair(keypair);
       const provider = new AnchorProvider(connection, new NodeWallet(kp), {});
-      const program = createProgram(provider, CLUSTER);
+      const program = createGoatswapProgram(provider, CLUSTER);
       const pairKeypair = new Keypair();
       const builder = await initializePairMethodsBuilder({
         program,
         pairKeypair,
-        collection: new PublicKey(collection),
+        collectionVerification: {
+          collection: { collection: new PublicKey(collection) },
+        },
         uiPoolType: poolType,
         spotPrice: new BN(spotPrice),
         delta: new BN(delta),
@@ -116,7 +118,29 @@ command
     "Show all collections and how many pairs there are, does not indicate liquidity"
   )
   .action(async () => {
-    const collectionToKeyedPairs = await loadCollectionToKeyedPairs(program);
+    const addressWithPairs = await fetchAllAddressWithPairs(program);
+    const addressWithGoatkeepers = await fetchAllAddressWithGoatkeepers(
+      createGoatkeeperProgram(provider)
+    );
+
+    const collectionToKeyedPairs = addressWithPairs.reduce(
+      (acc, { publicKey, account }) => {
+        const collection = collectionFromCollectionVerification(
+          account.collectionVerification,
+          addressWithGoatkeepers
+        );
+        if (collection) {
+          const collectionBase58 = collection.toBase58();
+          const pairs = acc.get(collectionBase58) ?? [];
+          pairs.push({ address: publicKey, pair: account });
+          acc.set(collectionBase58, pairs);
+        }
+
+        return acc;
+      },
+      new Map<string, KeyedPair[]>()
+    );
+
     const mints = [...collectionToKeyedPairs.keys()].map(
       (c) => new PublicKey(c)
     );
@@ -145,26 +169,36 @@ command
   .action(async ({ keypair, pair: pairArg, lamports, dryRun }) => {
     const kp = loadKeypair(keypair);
     const provider = new AnchorProvider(connection, new NodeWallet(kp), {});
-    const program = createProgram(provider, CLUSTER);
+    const program = createGoatswapProgram(provider, CLUSTER);
     const pairAddress = new PublicKey(pairArg);
-    const pair = await program.account.pair.fetch(pairAddress);
-    const keyedPair: KeyedPair = { address: pairAddress, pair };
+
+    const pair = (await program.account.pair.fetch(
+      pairAddress
+    )) as unknown as Pair;
+    const keyedPair: KeyedPair = {
+      address: pairAddress,
+      pair,
+    };
 
     const price = new BN(lamports);
     const pairMeta = (
-      await loadPairMetasForKeyedPairs(connection, program.programId, [
-        keyedPair,
-      ])
+      await loadPairMetasForKeyedPairs(
+        connection,
+        program.programId,
+        [keyedPair],
+        stubFetchMintInfos
+      )
     )[0];
     // Buy the first one
     const nft = pairMeta.pairNfts[0];
-    const builder = await swapTokenForNftMethodsBuilder(
+    const builder = await swapTokenForNftMethodsBuilder({
       program,
       keyedPair,
       nft,
       price,
-      0 // slippage 0
-    );
+      slippageBps: 100, // slippage 1%
+      fetchMintInfo: stubFetchMintInfo,
+    });
 
     if (dryRun) {
       await simulateAndDisplayTx(
