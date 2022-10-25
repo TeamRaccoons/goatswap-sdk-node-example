@@ -136,20 +136,20 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@raccoonsdev/goatswap-sdk@0.0.1-99718b.0":
-  version "0.0.1-99718b.0"
-  resolved "https://registry.yarnpkg.com/@raccoonsdev/goatswap-sdk/-/goatswap-sdk-0.0.1-99718b.0.tgz#4df22010c0a6b226c9140685b816041eca3fb838"
-  integrity sha512-j4PG3pOoB9hxXipbt8QvWk7x1VVroChv5p0xqNo5EdxZDKQ7SdToN7V03rxOP6LPeTKIXEwj8Sk05gaZVuei4A==
+"@raccoonsdev/goatswap-sdk@0.0.1-76b25b3.0":
+  version "0.0.1-76b25b3.0"
+  resolved "https://registry.yarnpkg.com/@raccoonsdev/goatswap-sdk/-/goatswap-sdk-0.0.1-76b25b3.0.tgz#51a43a87bc8dee34f5c4a134e812a898ed674d26"
+  integrity sha512-TKQ5gOPXZfUskon2sjmJlC+CgnnrnNHm6sjjgwPxXlm+ysUyxtwBvf6bLh0XBfXp0SvU1lJA+q06ZfP8O7oIjQ==
   dependencies:
     "@metaplex-foundation/mpl-token-metadata" "^2.2.4"
     "@project-serum/anchor" "^0.25.0"
-    "@raccoonsdev/solana-contrib" "0.0.1-99718b.0"
+    "@raccoonsdev/solana-contrib" "0.0.1-76b25b3.0"
     "@solana/web3.js" "^1.56.2"
 
-"@raccoonsdev/solana-contrib@0.0.1-99718b.0":
-  version "0.0.1-99718b.0"
-  resolved "https://registry.yarnpkg.com/@raccoonsdev/solana-contrib/-/solana-contrib-0.0.1-99718b.0.tgz#62c8620af1ff0ebb13df0abcab2844a6b19d27f2"
-  integrity sha512-n5g0tbjYBfGgprxzHPVNlJh9bULVDQy0XdOxcS+PckGTVZfZt1LeVFKKWur6I9UygJECdKsMzJZuKdkBAc7Oug==
+"@raccoonsdev/solana-contrib@0.0.1-76b25b3.0":
+  version "0.0.1-76b25b3.0"
+  resolved "https://registry.yarnpkg.com/@raccoonsdev/solana-contrib/-/solana-contrib-0.0.1-76b25b3.0.tgz#00b804cc8e1b79e2868254fed10859af47360569"
+  integrity sha512-cQkh0moLiwMT9bkBWRpQPFMB4ZF9qo2A0kUR8r2xsTOleGE68+0kIefrDjp0wcmWW7T2k1DGPXTWoo44qGxM+Q==
   dependencies:
     "@solana/web3.js" "^1.56.2"
     mathjs "^11.1.0"
